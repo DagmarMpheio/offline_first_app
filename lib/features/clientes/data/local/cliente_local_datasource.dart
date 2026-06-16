@@ -21,8 +21,14 @@ class ClienteLocalDataSource {
 
   /// READ - Escuta alterações em tempo real
   Stream<List<Cliente>> watchClientes() {
-    return _isar.clientes.where().watch(fireImmediately: true);
+    return _isar.clientes
+        .filter()
+        .isDeletedEqualTo(false)
+        .watch(fireImmediately: true);
   }
+  /* Stream<List<Cliente>> watchClientes() {
+    return _isar.clientes.where().watch(fireImmediately: true);
+  } */
 
   /// UPDATE
   Future<void> updateCliente(Cliente cliente) async {
