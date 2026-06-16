@@ -14,7 +14,7 @@ class IsarService {
 
     // Abrin a base de dados Isar com o esquema do Cliente
     instance = await Isar.open(
-      [ClienteSchema],
+      [ClienteSchema], // Esquema do modelo Cliente
       directory: dir.path, // Diretório onde os dados serão armazenados
       inspector:
           true, // Permite visualizar o base de dados Isar durante o desenvolvimento
