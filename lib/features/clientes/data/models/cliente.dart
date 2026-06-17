@@ -1,33 +1,45 @@
-import 'package:isar/isar.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:uuid/uuid.dart';
 
 part 'cliente.g.dart';
 
-// Modelo de dados do Cliente para a base de dados Isar
-@collection
-class Cliente {
-  // ID interno do Isar
-  Id isarId = Isar.autoIncrement;
+@HiveType(typeId: 0)
+class Cliente extends HiveObject {
 
-  // ID universal usado no Firebase
-  @Index(unique: true)
+  // ID usado no Firebase
+  @HiveField(0)
   String id = const Uuid().v4();
 
   // Dados do cliente
-  late String nome;
+  @HiveField(1)
+  String nome;
 
-  late String telefone;
+  @HiveField(2)
+  String telefone;
 
   // Controle de datas
-  DateTime createdAt = DateTime.now();
+  @HiveField(3)
+  DateTime createdAt;
 
-  DateTime updatedAt = DateTime.now();
+  @HiveField(4)
+  DateTime updatedAt;
 
   // Controle de sincronização
-  @Index()
-  bool isSynced = false;
+  @HiveField(5)
+  bool isSynced;
 
   // Soft Delete
-  @Index()
-  bool isDeleted = false;
+  @HiveField(6)
+  bool isDeleted;
+
+
+  Cliente({
+    required this.nome,
+    required this.telefone,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    this.isSynced = false,
+    this.isDeleted = false,
+  })  : createdAt = createdAt ?? DateTime.now(),
+        updatedAt = updatedAt ?? DateTime.now();
 }

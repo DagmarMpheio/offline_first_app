@@ -13,14 +13,21 @@ class ClientesPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Clientes'),
+        title: Text(
+          'Clientes',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.blue,
       ),
 
       body: clientes.when(
         data: (lista) {
           if (lista.isEmpty) {
             return const Center(
-              child: Text('Nenhum cliente cadastrado'),
+              child: Text(
+                'Nenhum cliente cadastrado',
+                style: TextStyle(color: Colors.grey, fontSize: 20),
+              ),
             );
           }
 
@@ -34,19 +41,20 @@ class ClientesPage extends ConsumerWidget {
                 subtitle: Text(cliente.telefone),
 
                 onTap: () {
-                  _mostrarFormulario(
-                    context,
-                    ref,
-                    cliente: cliente,
-                  );
+                  _mostrarFormulario(context, ref, cliente: cliente);
                 },
 
                 trailing: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () async {
-                    await ref
-                        .read(clienteNotifierProvider)
-                        .delete(cliente);
+                    await ref.read(clienteNotifierProvider).delete(cliente);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Cliente excluído com sucesso!'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
                   },
                 ),
               );
@@ -55,17 +63,14 @@ class ClientesPage extends ConsumerWidget {
         },
 
         loading: () =>
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
+            const Center(child: CircularProgressIndicator(color: Colors.blue)),
 
-        error: (error, stack) =>
-            Center(
-              child: Text(error.toString()),
-            ),
+        error: (error, stack) => Center(child: Text(error.toString())),
       ),
 
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         onPressed: () {
           _mostrarFormulario(context, ref);
         },
@@ -80,41 +85,33 @@ class ClientesPage extends ConsumerWidget {
     WidgetRef ref, {
     Cliente? cliente,
   }) {
-    final nomeController =
-        TextEditingController(
-          text: cliente?.nome ?? '',
-        );
+    final nomeController = TextEditingController(text: cliente?.nome ?? '');
 
-    final telefoneController =
-        TextEditingController(
-          text: cliente?.telefone ?? '',
-        );
+    final telefoneController = TextEditingController(
+      text: cliente?.telefone ?? '',
+    );
 
     showDialog(
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: Text(
-            cliente == null
-                ? 'Novo Cliente'
-                : 'Editar Cliente',
-          ),
+          title: Text(cliente == null ? 'Novo Cliente' : 'Editar Cliente'),
 
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nomeController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome',
-                ),
+                decoration: const InputDecoration(labelText: 'Nome'),
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.name,
               ),
 
               TextField(
                 controller: telefoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Telefone',
-                ),
+                decoration: const InputDecoration(labelText: 'Telefone'),
+                textInputAction: TextInputAction.done,
+                keyboardType: TextInputType.phone,
               ),
             ],
           ),
@@ -128,26 +125,41 @@ class ClientesPage extends ConsumerWidget {
               child: const Text('Cancelar'),
             ),
 
-            ElevatedButton(
+            ElevatedButton.icon(
+              icon: Icon(Icons.add),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
               onPressed: () async {
-
                 if (cliente == null) {
-                  final novo = Cliente()
-                    ..nome = nomeController.text
-                    ..telefone = telefoneController.text;
+                  final novo = Cliente(
+                    nome: nomeController.text,
+                    telefone: telefoneController.text,
+                  );
+                  /*   ..nome = nomeController.text
+                    ..telefone = telefoneController.text; */
 
-                  await ref
-                      .read(clienteNotifierProvider)
-                      .add(novo);
+                  await ref.read(clienteNotifierProvider).add(novo);
 
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Cliente criado com sucesso!'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
                 } else {
-
                   cliente.nome = nomeController.text;
                   cliente.telefone = telefoneController.text;
 
-                  await ref
-                      .read(clienteNotifierProvider)
-                      .update(cliente);
+                  await ref.read(clienteNotifierProvider).update(cliente);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Cliente actualizado com sucesso!'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
                 }
 
                 if (context.mounted) {
@@ -155,7 +167,7 @@ class ClientesPage extends ConsumerWidget {
                 }
               },
 
-              child: const Text('Salvar'),
+              label: const Text('Salvar'),
             ),
           ],
         );
