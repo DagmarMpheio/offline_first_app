@@ -43,11 +43,6 @@ class ClientesPage extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-
                   leading: CircleAvatar(
                     backgroundColor: Colors.blue.shade100,
                     child: Text(
