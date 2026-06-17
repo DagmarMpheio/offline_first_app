@@ -36,26 +36,53 @@ class ClientesPage extends ConsumerWidget {
             itemBuilder: (context, index) {
               final cliente = lista[index];
 
-              return ListTile(
-                title: Text(cliente.nome),
-                subtitle: Text(cliente.telefone),
+              return Card(
+                elevation: 2,
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
 
-                onTap: () {
-                  _mostrarFormulario(context, ref, cliente: cliente);
-                },
-
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () async {
-                    await ref.read(clienteNotifierProvider).delete(cliente);
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Cliente excluído com sucesso!'),
-                        duration: Duration(seconds: 2),
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.blue.shade100,
+                    child: Text(
+                      cliente.nome.isNotEmpty
+                          ? cliente.nome[0].toUpperCase()
+                          : '',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
                       ),
-                    );
+                    ),
+                  ),
+                  title: Text(
+                    cliente.nome,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(cliente.telefone),
+
+                  onTap: () {
+                    _mostrarFormulario(context, ref, cliente: cliente);
                   },
+
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {
+                      await ref.read(clienteNotifierProvider).delete(cliente);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Cliente excluído com sucesso!'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               );
             },
