@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:offline_first_app/features/clientes/data/models/cliente.dart';
 import 'package:offline_first_app/features/clientes/providers/cliente_provider.dart';
+import 'package:offline_first_app/features/clientes/providers/remote_provider.dart';
 
 // Página principal para exibir a lista de clientes e permitir operações de CRUD.
 class ClientesPage extends ConsumerWidget {
@@ -182,10 +183,6 @@ class ClientesPage extends ConsumerWidget {
                       duration: Duration(seconds: 2),
                     ),
                   );
-                }
-
-                if (context.mounted) {
-                  Navigator.pop(context);
                 }
               },
 
