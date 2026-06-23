@@ -6,10 +6,7 @@ class ClienteRepository {
   final ClienteLocalDataSource local;
   final ClienteRemoteDataSource remote;
 
-  ClienteRepository({
-    required this.local,
-    required this.remote,
-  });
+  ClienteRepository({required this.local, required this.remote});
 
   /// CREATE
   Future<void> addCliente(Cliente cliente) async {
@@ -27,21 +24,50 @@ class ClienteRepository {
   }
 
   /// UPDATE
-  Future<void> updateCliente(
-    Cliente cliente,
-  ) async {
+  Future<void> updateCliente(Cliente cliente) async {
     await local.updateCliente(cliente);
   }
 
   /// DELETE
-  Future<void> deleteCliente(
-    Cliente cliente,
-  ) async {
+  Future<void> deleteCliente(Cliente cliente) async {
     await local.deleteCliente(cliente);
   }
 
   /// Pendentes de sincronização
   Future<List<Cliente>> getPendingSync() {
     return local.getPendingSync();
+  }
+
+  /// Sincronização de um cliente específico
+  Future<void> syncCliente(Cliente cliente) async {
+    // Se o cliente estiver marcado como excluído, removemos do remoto e do local
+    if (cliente.isDeleted) {
+      // Remover o cliente do remoto
+      await remote.deleteCliente(cliente.id);
+
+      // Remover o cliente do local
+      await cliente.delete();
+
+      return;
+    }
+    
+    // Se o cliente não estiver marcado como excluído, salvamos no remoto e actualizamos o status de sincronização
+    await remote.saveCliente(cliente);
+
+    // Actualizamos o status de sincronização no local
+    cliente.isSynced = true;
+
+    await cliente.save();
+  }
+  
+  /// Sincroniza todos os clientes pendentes
+  Future<void> syncPending() async {
+    // Obter todos os clientes pendentes de sincronização
+    final pendentes = await local.getPendingSync();
+
+    // Sincronizar cada cliente pendente
+    for (final cliente in pendentes) {
+      await syncCliente(cliente);
+    }
   }
 }
